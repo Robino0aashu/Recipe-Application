@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:transparent_image/transparent_image.dart';
+
 import '../models/meals.dart';
 import '../screens/meal_detail.dart';
 
@@ -62,6 +64,7 @@ class MealItem extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
           ),
           elevation: 4,
+          color: Colors.white,
           margin: const EdgeInsets.all(10),
           child: Column(
             children: [
@@ -72,12 +75,11 @@ class MealItem extends StatelessWidget {
                       topLeft: Radius.circular(15),
                       topRight: Radius.circular(15),
                     ),
-                    child: Image.network(
-                      imageUrl,
-                      height: 250,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
+                    child: Hero(
+                      tag: id,
+                      child: FadeInImage(placeholder: MemoryImage(kTransparentImage),
+                      image: NetworkImage(imageUrl),),
+                    )
                   ),
                   Positioned(
                     bottom: 20,
@@ -109,7 +111,8 @@ class MealItem extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.schedule),
+                        Icon(Icons.schedule,
+                        color: Colors.black,),
                         SizedBox(width: 6,),
                         Text('$duration minutes'),
                       ],
@@ -117,7 +120,8 @@ class MealItem extends StatelessWidget {
                     Row(
                       
                       children: [
-                        Icon(Icons.work),
+                        Icon(Icons.work,
+                        color: Colors.black,),
                         SizedBox(width: 6,),
                         Text(complexityText,
                         ),

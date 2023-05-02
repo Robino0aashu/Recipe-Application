@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../provider/favourites_provider.dart';
+
 import './categories.dart';
 import './favourites_screen.dart';
 import '../widgets/drawer.dart';
-import '../models/meals.dart';
 
-class TabsScreen extends StatefulWidget {
+class TabsScreen extends ConsumerStatefulWidget {
   static const routeName='/tabsScreen';
-  List<Meal> favMeal;
-  TabsScreen(this.favMeal);
+  // List<Meal> favMeal;
+  // TabsScreen(this.favMeal, {super.key});
   @override
-  State<TabsScreen> createState() => _TabsScreenState();
+  ConsumerState<TabsScreen> createState() => _TabsScreenState();
 }
 
-class _TabsScreenState extends State<TabsScreen> {
+class _TabsScreenState extends ConsumerState<TabsScreen> {
 
   
   late List<Widget> _pages;
@@ -26,25 +29,20 @@ class _TabsScreenState extends State<TabsScreen> {
   }
 
   @override
-  void initState() {
-    _pages=[
-     CategoriesScreen(),
-     FavouritesScreen(widget.favMeal),
-  ];
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final favouriteMeals=ref.watch(favouriteMealsProvider);
+    _pages=[
+     const CategoriesScreen(),
+     FavouritesScreen(favouriteMeals)];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meals'),
+        title: const Text('Meals'),
       ),
-      drawer: DrawerWidget(),
+      drawer: const DrawerWidget(),
       body: _pages[_selectedPageIndex],
       bottomNavigationBar: BottomNavigationBar(
         unselectedItemColor: Colors.white,
-        selectedItemColor: Theme.of(context).accentColor,
+        selectedItemColor: Theme.of(context).colorScheme.secondary,
         currentIndex: _selectedPageIndex,
         onTap: _selectPage,
         items: const [
@@ -63,36 +61,3 @@ class _TabsScreenState extends State<TabsScreen> {
     );
   }
 }
-
-
-
-/* for Top navigation bar
-
- return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Meals'),
-          bottom: const TabBar(tabs: [
-            Tab(
-              icon: Icon(
-                Icons.category,
-              ),
-              text: 'Categories',
-            ),
-            Tab(
-              icon: Icon(
-                Icons.star,
-              ),
-              text: 'Favourites',
-            ),
-          ]),
-        ),
-        body: TabBarView(children: [
-          CategoriesScreen(),
-          FavouritesScreen(),
-        ]),
-      ),
-    );
-
-    */

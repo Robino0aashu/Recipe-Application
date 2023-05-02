@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../provider/favourites_provider.dart';
 import '../dummy_data.dart';
 
-class MealDetails extends StatelessWidget {
+class MealDetails extends ConsumerWidget {
   static const routeName = './meal-details';
-  final Function toggleFavourite;
-  final Function isFavourite;
-  MealDetails(this.toggleFavourite, this.isFavourite);
 
   Widget BuildSectionTitle(BuildContext context, String text) {
     return Container(
@@ -36,31 +36,39 @@ class MealDetails extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final mealId = ModalRoute.of(context)?.settings.arguments as String;
-
     final selectedMeal = DUMMY_MEALS.firstWhere((meal) => meal.id == mealId);
+
+    final favouriteList = ref.watch(favouriteMealsProvider);
+    final isMealFavourite = favouriteList.contains(selectedMeal);
     return Scaffold(
         appBar: AppBar(
-          title: Text('${selectedMeal.title}'),
+          title: Text(selectedMeal.title),
         ),
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Container(
+              SizedBox(
                 height: 300,
                 width: double.infinity,
-                child: Image.network(
-                  selectedMeal.imageUrl,
-                  fit: BoxFit.cover,
+                child: Hero(
+                  tag: selectedMeal.id,
+                  child: Image.network(
+                    selectedMeal.imageUrl,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-              BuildSectionTitle(context, 'Ingredients'),
+              BuildSectionTitle(
+                context,
+                'Ingredients',
+              ),
               BuildContainer(
                 context,
                 ListView.builder(
                   itemBuilder: (ctx, index) => Card(
-                    color: Theme.of(context).accentColor,
+                    color: Theme.of(context).colorScheme.secondary,
                     child: Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: 5,
@@ -71,7 +79,10 @@ class MealDetails extends StatelessWidget {
                   itemCount: selectedMeal.ingredients.length,
                 ),
               ),
-              BuildSectionTitle(context, 'Steps'),
+              BuildSectionTitle(
+                context,
+                'Steps',
+              ),
               BuildContainer(
                 context,
                 ListView.builder(
@@ -93,10 +104,23 @@ class MealDetails extends StatelessWidget {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          child: Icon(
-            isFavourite(mealId) ? Icons.star : Icons.star_border,
-          ),
-          onPressed: ()=> toggleFavourite(mealId),
+          child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 300),
+              transitionBuilder: (child, animation) {
+                return RotationTransition(
+                    turns: Tween(begin: 0.9, end: 1.0).animate(animation),
+                    child: child);
+              },
+              child: Icon(
+                isMealFavourite ? Icons.star : Icons.star_border,
+                color: isMealFavourite ? Colors.redAccent : Colors.black,
+                key: ValueKey(isMealFavourite),
+              )),
+          onPressed: () {
+            ref
+                .watch(favouriteMealsProvider.notifier)
+                .toggleMealFavouriteStatus(selectedMeal);
+          },
         ));
   }
 }

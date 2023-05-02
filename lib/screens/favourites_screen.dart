@@ -7,12 +7,12 @@ class FavouritesScreen extends StatelessWidget {
 
   static const routeName='/favourite';
   List<Meal> favMeal;
-  FavouritesScreen(this.favMeal);
+  FavouritesScreen(this.favMeal, {super.key});
 
   @override
   Widget build(BuildContext context) {
     if(favMeal.isEmpty){
-      return NoFavourites();
+      return const NoFavourites();
     }
     else{
       return ListView.builder(

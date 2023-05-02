@@ -32,14 +32,14 @@ class DrawerWidget extends StatelessWidget {
           height: 120,
           width: double.infinity,
           padding: const EdgeInsets.all(10),
-          color: Theme.of(context).accentColor,
+          color: Theme.of(context).colorScheme.secondary,
           alignment: Alignment.centerLeft,
           child: Text(
             'Cooking up',
             style: TextStyle(
               fontWeight: FontWeight.w900,
               fontSize: 30,
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
           ),
         ),

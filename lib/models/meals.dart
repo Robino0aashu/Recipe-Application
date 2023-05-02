@@ -12,6 +12,8 @@ enum Affordability{
   Luxurious
 }
 
+
+
 class  Meal{
   final String id;
   final List<String> categories;

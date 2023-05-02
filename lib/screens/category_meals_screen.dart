@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meal_decider/provider/filters_provider.dart';
+
 import '../models/meals.dart';
 import '../widgets/meal_item.dart';
 
-class CategoryMealScreen extends StatefulWidget {
-  List<Meal> availableMeals;
-  CategoryMealScreen(
-    this.availableMeals,
-  );
+class CategoryMealScreen extends ConsumerStatefulWidget {
+  // List<Meal> availableMeals;
+  // CategoryMealScreen(
+  //   this.availableMeals,
+  // );
 
   @override
-  State<CategoryMealScreen> createState() => _CategoryMealScreenState();
+  ConsumerState<CategoryMealScreen> createState() => _CategoryMealScreenState();
 }
 
-class _CategoryMealScreenState extends State<CategoryMealScreen> {
+class _CategoryMealScreenState extends ConsumerState<CategoryMealScreen> {
   late String categoryTitle;
   late List<Meal> displayedMeals;
   var _loadedInitData = false;
@@ -24,13 +27,14 @@ class _CategoryMealScreenState extends State<CategoryMealScreen> {
 
   @override
   void didChangeDependencies() {
+    final availableMeals=ref.watch(filteredMealsProvider);
     if (!_loadedInitData) {
       final routeArgs =
           ModalRoute.of(context)?.settings.arguments as Map<String, String>;
       final categoryId = routeArgs['id'];
       categoryTitle = routeArgs['title']!;
 
-      displayedMeals = widget.availableMeals.where((meal) {
+      displayedMeals = availableMeals.where((meal) {
         return meal.categories.contains(categoryId);
       }).toList();
       _loadedInitData = true;
@@ -39,11 +43,6 @@ class _CategoryMealScreenState extends State<CategoryMealScreen> {
     super.didChangeDependencies();
   }
 
-  void _removeMeal(String mealID) {
-    setState(() {
-      displayedMeals.removeWhere((meal) => meal.id == mealID);
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +50,7 @@ class _CategoryMealScreenState extends State<CategoryMealScreen> {
       appBar: AppBar(
         title: Text(categoryTitle),
       ),
-      body: ListView.builder(
+      body:ListView.builder(
         itemBuilder: (ctx, index) {
           return MealItem(
             id: displayedMeals[index].id,
@@ -63,7 +62,7 @@ class _CategoryMealScreenState extends State<CategoryMealScreen> {
           );
         },
         itemCount: displayedMeals.length,
-      ),
+      )
     );
   }
 }
